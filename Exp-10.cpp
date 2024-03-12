@@ -1,60 +1,67 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int changeMaking(int coin[], int n, int sum)
+
+void dfs(vector<int> adj[], int V, vector<int>& vis,
+		int i, int curr)
 {
-    int a, b, x, y;
+	vis[curr] = 1;
+	for (auto x : adj[curr]) {
+		if (x != i) {
+			if (!vis[x]) {
+				dfs(adj, V, vis, i, x);
+			}
+		}
+	}
+}
 
-    int dp[n + 1][sum + 1];
+void AP(vector<int> adj[], int V)
+{
+	for (int i = 1; i <= V; i++) {
 
-    for (b = 0; b <= sum; b++)
-        dp[0][b] = INT_MAX;
 
-    for (a = 1; a <= n; a++)
-        dp[a][0] = 0;
+		int components = 0;
 
-    for (a = 1; a <= n; a++)
-    {
-        for (b = 1; b <= sum; b++)
-        {
-            if (b >= coin[a - 1])
-            {
-                x = dp[a - 1][b];
-                y = 1 + dp[a][b - coin[a - 1]];
-                dp[a][b] = min(x, y);
-            }
-            else
-                dp[a][b] = dp[a - 1][b];
-        }
-    }
+		
+		vector<int> vis(V + 1, 0);
 
-    return dp[n][sum];
+		
+		for (int j = 1; j <= V; j++) {
+			if (j != i) {
+
+				
+				if (!vis[j]) {
+
+					
+					components++;
+
+					dfs(adj, V, vis, i, j);
+				}
+			}
+		}
+		
+		if (components > 1) {
+			cout << i << "\n";
+		}
+	}
+}
+void addEdge(vector<int> adj[], int u, int v)
+{
+	adj[u].push_back(v);
+	adj[v].push_back(u);
 }
 
 int main()
 {
-    int i;
-    int k, sum;
+	cout << "Articulation points in the graph \n";
+	int V = 5;
+	vector<int> adj1[V + 1];
+	addEdge(adj1, 1, 2);
+	addEdge(adj1, 2, 3);
+	addEdge(adj1, 1, 3);
+	addEdge(adj1, 3, 4);
+	addEdge(adj1, 4, 5);
+	AP(adj1, V);
 
-    cout << "Enter the amount for whose change is needed" << endl;
-    cin >> sum;
-
-    cout << "Enter the denominations of coins availale" << endl;
-    cin >> k;
-
-    int coin[k];
-
-    cout << "Enter the values of coins" << endl;
-    for (i = 0; i < k; i++)
-        cin >> coin[i];
-
-    clock_t t = clock();
-    cout << "The least number of coins whose sum is equal to required sum is" << endl;
-    cout << changeMaking(coin, k, sum);
-
-    t = clock() - t;
-    float time_taken = (float)t / CLOCKS_PER_SEC;
-    cout << endl
-         << "Time taken by algorithm is :" << time_taken << endl;
-    return 0;
+	return 0;
 }
